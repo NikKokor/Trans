@@ -43,18 +43,6 @@ class CppSemanticsAnalyzer:
                     init_id.append(copy.deepcopy(l.term.lex))
         # print("init id", init_id)
 
-        # собираем все объявления функций
-        initialization_node = self.start_find_by_term_value("объявление функции")
-        init_id_fun = []
-        for node in initialization_node:
-            leaves = node.leaves
-            for l in leaves:
-                if l.term.value == 'ID':
-                    init_id_fun.append(copy.deepcopy(l.term.lex))
-        for id in init_id:
-            init_id_fun = self.__remove_values_from_list(init_id_fun, id)
-        # print("init id fun", init_id_fun)
-
         # проверим наличие объявления main
         if 'main' in init_id:
             print("Переобъявление имени main запрещено")
@@ -83,8 +71,6 @@ class CppSemanticsAnalyzer:
         for node in initialization_node:
             used_id.append(copy.deepcopy(node.term.lex))
         for id in init_id:
-            used_id = self.__remove_values_from_list(used_id, id)
-        for id in init_id_fun:
             used_id = self.__remove_values_from_list(used_id, id)
         used_id.remove('main')
         if used_id:
