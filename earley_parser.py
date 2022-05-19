@@ -34,7 +34,7 @@ class Parser:
         print("_______TREE________")
         self.grow_tree()
         sem = CppSemanticsAnalyzer(self.tree)
-        if sem.check_semantic():
+        if not sem.check_semantic():
             sys.exit()
         print("_______OPTIMIZER________")
         sem.optimizer()

@@ -24,7 +24,7 @@ class trans():
         parsed[0] = ["public static void",'JAVA',parsed[0][2]]
         for element in parsed:
             element[2] = int(element[2]) + 2
-        #parsed = [['package','JAVA',1], ['main','JAVA',1]] + parsed
+        # parsed = [['package','JAVA',1], ['main','JAVA',1]] + parsed
         return parsed
 
     def types(self, parsed):
@@ -60,7 +60,7 @@ class trans():
         # [type, name, =, value]
         # [type, name, =, value, ., value]
         # [type, name]
-        new_arr = [["","JAVA",type_arr[0][2]]]
+        new_arr = [["", "JAVA", type_arr[0][2]]]
         new_arr.append([self.type_dict[type_arr[0][0]],type_arr[0][1], type_arr[0][2]])
         new_arr.append(type_arr[1])        
         if len(type_arr) == 2:
@@ -71,7 +71,7 @@ class trans():
     def __select_block(self, start_index, arr, left_edge, right_edge):
         # arr[start_index] always '(' or '{'
         block = []
-        print(colored(arr[start_index],"red"))
+        print(colored(arr[start_index], "red"))
         local_index = start_index
         recursive = False
         if arr[start_index][0] == left_edge:
@@ -94,7 +94,7 @@ class trans():
         while i < len(parsed):
             print(colored("-----"+str(i)+"-----"+str(parsed[i]), "cyan"))
             if parsed[i][0] in ["for", "while"]:
-                print(colored(parsed[i][0],"cyan"))
+                print(colored(parsed[i][0], "cyan"))
                 condition, c_end, fake_bool = self.__select_block(i+1, parsed, '(', ')')
                 print(colored(condition, "yellow"))
                 body, b_end, recursive = self.__select_block(c_end, parsed, '{', '}')
@@ -105,7 +105,7 @@ class trans():
                 if body != [] and condition != []:
                     transformed = self.transform_loop([parsed[i], condition, body])
                     print(colored(transformed, "red"))
-                    print(colored(parsed[b_end],"red"), b_end)
+                    print(colored(parsed[b_end], "red"), b_end)
                     start = i
                     i += len(transformed)
                     parsed[start:b_end] = transformed
@@ -116,9 +116,10 @@ class trans():
                 if recursive:
                     body = self.find_and_replace_loop(body,0)
                 condition, c_end, fake_bool = self.__select_block(b_end+1, parsed, '(', ')')
-                print("LAST DO:",colored(parsed[c_end],"cyan"))
+                print("LAST DO:", colored(parsed[c_end], "cyan"))
                 if body != [] and condition != [] and parsed[b_end][0] == "while":
-                    transformed = self.transform_loop([parsed[i],body, parsed[b_end],condition])
+                    transformed = self.transform_loop([parsed[i], body, parsed[b_end], condition])
+                    print(colored(transformed, "red"))
                     start = i
                     i += len(transformed)
                     parsed[start:c_end] = transformed
@@ -134,18 +135,15 @@ class trans():
         # [while, [condition],[body]]
         # [do, [body], while, [condition]]
         new_loop = []
-        if loop[0][0] in ["for", "while"]:
-            new_loop.append(['for','JAVA',loop[0][2]])
+        if loop[0][0] == "for":
+            new_loop.append(['for', 'JAVA', loop[0][2]])
 
-            start = 1
-            
-            # redact condition if for
-            if loop[0][0] == "for":
-                loop[1][3][0] = "("
-                start = 2
+            print("loop0: ", loop[0])
+            print("loop1: ", loop[1])
+            print("loop2: ", loop[2])
 
             # add condition
-            for i in range(start,len(loop[1])-1):
+            for i in range(len(loop[1])):
                 new_loop.append(loop[1][i])
             
             # add body
@@ -155,20 +153,39 @@ class trans():
             print(new_loop)
             return new_loop
 
-        elif loop[0][0] == "do":
-            cond = ""
-            print("loop0: ",loop[0])
-            print("loop1: ",loop[1])
-            print("loop2: ",loop[2])
-            print("loop3: ",loop[3])
-            for element in loop[3]:
-                cond += str(element[0])
-            new_loop.append(["for "+cond, 'JAVA',loop[0][2]])
-            for element in loop[1]:
-                new_loop.append(element)
+        elif loop[0][0] == "while":
+            new_loop.append(['while', 'JAVA', loop[0][2]])
+
+            print("loop0: ", loop[0])
+            print("loop1: ", loop[1])
+            print("loop2: ", loop[2])
+
+            # add condition
+            for i in range(len(loop[1])):
+                new_loop.append(loop[1][i])
+
+            # add body
+            for i in range(len(loop[2])):
+                new_loop.append(loop[2][i])
+
             print(new_loop)
             return new_loop
 
+        elif loop[0][0] == "do":
+            cond = ""
+            print("loop0: ", loop[0])
+            print("loop1: ", loop[1])
+            print("loop2: ", loop[2])
+            print("loop3: ", loop[3])
+            for element in loop[3]:
+                cond += str(element[0]) + " "
+            cond = cond[:len(cond) - 1:]
+            new_loop.append(["do ", 'JAVA', loop[0][2]])
+            for element in loop[1]:
+                new_loop.append(element)
+            new_loop.append(["while " + cond, 'JAVA', loop[2][2]])
+            print(new_loop)
+            return new_loop
 
     def __to_java(self, parsed, name):
         # name - string w/o .cpp or .java

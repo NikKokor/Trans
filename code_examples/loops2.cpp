@@ -8,7 +8,7 @@ int main() {
                 c = c * 5;
             }   
             c = c * 10;
-            for (int z = 1; z <= 12; z = z + 1) {  
+            for (int o = 1; o <= 12; o = o + 1) {
                 c = c * 5;
             }   
         }

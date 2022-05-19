@@ -1,9 +1,38 @@
 
 
 public static void main ( ) { 
+	 int c = 10; 
+	 int r = 0; 
 	
-	 int a = 7; 
-	 float b = 4.5; 
-	 boolean c = a == b ; 
+	for (  int i = 1; i <= 5; i = i + 1) { 
+		for (  int k = 5; k <= 10; k = k + 2) { 
+			for (  int z = 1; z <= 12; z = z + 1) { 
+				c = c * 5; 
+			} 
+			c = c * 10; 
+			for (  int o = 1; o <= 12; o = o + 1) { 
+				c = c * 5; 
+			} 
+		} 
+		r = r + 1; 
+	} 
+	
+	while ( r <= 20) { 
+		 int d = 10; 
+		while ( d >= 5) { 
+			r = r + 1; 
+		} 
+		r = r + 1; 
+	} 
+	
+	do  { 
+		r = r + 1; 
+		do  { 
+			c = c + 20; 
+		} 
+		while ( c <= 5000 ) ; 
+	} 
+	while ( r <= 30 ) ; 
+	
 	return 0; 
 } 
